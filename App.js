@@ -1,7 +1,9 @@
 import * as Location from "expo-location";
 import React, { useEffect, useState } from "react";
 import { StatusBar } from "expo-status-bar";
-
+import { API_KEY } from "@env";
+import axios from "axios";
+import { Fontisto } from "@expo/vector-icons";
 import {
   View,
   Text,
@@ -10,11 +12,7 @@ import {
   ScrollView,
   Linking,
 } from "react-native";
-import axios from "axios";
-import { Restart } from "fiction-expo-restart";
-import { Fontisto } from "@expo/vector-icons";
 
-const API_KEY = process.env.EXPO_PUBLIC_API_KEY;
 const icons = {
   Clouds: "cloudy",
   Clear: "day-sunny",
@@ -33,10 +31,10 @@ export default function App() {
   const [ok, setOk] = useState(true);
   const getWeather = async () => {
     setLoad(false);
+    // check 필요
     setTimeout(() => {
       if (load === false) {
-        alert("오류로 앱을 재실행 합니다.");
-        Restart();
+        alert("오류가 발생했습니다.");
       }
     }, 10000);
 
