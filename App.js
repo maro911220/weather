@@ -11,6 +11,8 @@ import {
   StyleSheet,
   ScrollView,
   Linking,
+  BackHandler,
+  Alert,
 } from "react-native";
 
 const icons = {
@@ -27,17 +29,21 @@ export default function App() {
   const [city, setCity] = useState("Loading...");
   const [days, setDays] = useState();
   const [date, setDate] = useState();
-  const [load, setLoad] = useState();
   const [ok, setOk] = useState(true);
+  let load;
   const getWeather = async () => {
-    setLoad(false);
-    // check 필요
+    // axios load check
+    load = false;
     setTimeout(() => {
       if (load === false) {
-        alert("오류가 발생했습니다.");
+        Alert.alert("ERROR", "Failed to load data Please re-run the app", [
+          { text: "CLOSE", onPress: () => BackHandler.exitApp() },
+        ]);
+        return true;
       }
     }, 10000);
 
+    // loaction request
     const { granted } = await Location.requestForegroundPermissionsAsync();
     !granted && setOk(false);
 
@@ -49,29 +55,25 @@ export default function App() {
       { latitude, longitude },
       { useGoogleMaps: false }
     );
-    setCity(location[0].street);
-    await axios
-      .get(
-        `https://api.openweathermap.org/data/2.5/onecall?lat=${latitude}&lon=${longitude}&exclude=alerts&appid=${API_KEY}&units=metric`
-      )
-      .then((res) => {
-        setDays(res.data.daily);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
 
+    setCity(location[0].street);
+
+    //get openweathermap data
+    const loc1 = `https://api.openweathermap.org/data/2.5/onecall?lat=${latitude}&lon=${longitude}&exclude=alerts&appid=${API_KEY}&units=metric`;
+    const loc2 = `https://api.openweathermap.org/data/2.5/forecast?lat=${latitude}&lon=${longitude}&appid=${API_KEY}&units=metric`;
     await axios
-      .get(
-        `https://api.openweathermap.org/data/2.5/forecast?lat=${latitude}&lon=${longitude}&appid=${API_KEY}&units=metric`
+      .all([axios.get(loc1), axios.get(loc2)])
+      .then(
+        axios.spread((res1, res2) => {
+          setDays(res1.data.daily);
+          setDate(res2.data.list);
+          load = true;
+        })
       )
-      .then((res) => {
-        setDate(res.data.list);
-      })
       .catch((err) => {
         console.log(err);
       });
-    setLoad(true);
+    // end
   };
 
   useEffect(() => {
@@ -401,15 +403,13 @@ const styles = StyleSheet.create({
   },
   // 버튼
   button: {
-    padding: 10,
-    borderRadius: 6,
-    marginTop: 12,
-    marginBottom: 20,
-    textAlign: "center",
-    color: "#fff",
     fontSize: 16,
+    marginTop: 12,
+    color: "#fff",
+    borderRadius: 6,
+    marginBottom: 18,
     fontWeight: "bold",
-    backgroundColor: "#8894ff",
+    textAlign: "center",
     textTransform: "uppercase",
   },
 });
