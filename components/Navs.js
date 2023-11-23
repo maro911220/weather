@@ -2,23 +2,30 @@ import React, { useState } from "react";
 import { Fontisto } from "@expo/vector-icons";
 import { View, Text, Modal, Pressable } from "react-native";
 
-export default Navs = ({ city, styles }) => {
+export default Navs = ({ city, styles, getWeather }) => {
   return (
     <View style={styles.nav}>
       <Text style={styles.cityName}>{city}</Text>
-      <Modals styles={styles} />
+      <Modals styles={styles} getWeather={getWeather} />
     </View>
   );
 };
 
-const Modals = ({ styles }) => {
+const Modals = ({ styles, getWeather }) => {
   const [modalVisible, setModalVisible] = useState(false);
   return (
     <>
       <Modal animationType="fade" transparent={true} visible={modalVisible}>
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
-            <Text style={styles.modalText}>TEST</Text>
+            <Text
+              onPress={() => {
+                getWeather("Washington, D.C", 38.8951, -77.0364);
+                setModalVisible(!modalVisible);
+              }}
+            >
+              Washington
+            </Text>
             <Pressable
               style={[styles.button, styles.buttonClose]}
               onPress={() => setModalVisible(!modalVisible)}

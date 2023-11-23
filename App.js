@@ -36,23 +36,46 @@ export default function App() {
   const [days, setDays] = useState();
   const [date, setDate] = useState();
   const [ok, setOk] = useState(true);
-  const [refreshingCheck, setRefreshingCheck] = useState(1);
   const [refreshing, setRefreshing] = useState(false);
 
-  //getWeather
-  const getWeather = async () => {
-    // axios load check
-    let load = false;
-    setTimeout(() => {
-      if (load === false) {
-        Alert.alert("ERROR", "Failed to load data Please re-run the app", [
-          { text: "Close", onPress: () => BackHandler.exitApp() },
-          { text: "Reload", onPress: () => onRefresh() },
-        ]);
-        return true;
-      }
-    }, 10000);
+  // reset
+  const reset = () => {
+    setDays();
+    setDate();
+  };
 
+  // getWeather
+  const getWeather = async (citys, latitude, longitude) => {
+    // axios load check
+    reset();
+    let timer = setTimeout(() => {
+      Alert.alert("ERROR", "Failed to load data Please re-run the app", [
+        { text: "Close", onPress: () => BackHandler.exitApp() },
+        { text: "Reload", onPress: () => onRefresh() },
+      ]);
+      return true;
+    }, 10000);
+    // city
+    setCity(citys);
+    //get openweathermap data
+    const loc1 = `https://api.openweathermap.org/data/2.5/onecall?lat=${latitude}&lon=${longitude}&exclude=alerts&appid=${API_KEY}&units=metric`;
+    const loc2 = `https://api.openweathermap.org/data/2.5/forecast?lat=${latitude}&lon=${longitude}&appid=${API_KEY}&units=metric`;
+    await axios
+      .all([axios.get(loc1), axios.get(loc2)])
+      .then(
+        axios.spread((res1, res2) => {
+          setDays(res1.data.daily);
+          setDate(res2.data.list);
+          clearTimeout(timer);
+        })
+      )
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
+  // LocalLoad
+  const LocalLoad = async () => {
     // loaction request
     const { granted } = await Location.requestForegroundPermissionsAsync();
     !granted && setOk(false);
@@ -70,37 +93,19 @@ export default function App() {
       ? location[0].district
       : location[0].street;
 
-    setCity(citys);
-
-    //get openweathermap data
-    const loc1 = `https://api.openweathermap.org/data/2.5/onecall?lat=${latitude}&lon=${longitude}&exclude=alerts&appid=${API_KEY}&units=metric`;
-    const loc2 = `https://api.openweathermap.org/data/2.5/forecast?lat=${latitude}&lon=${longitude}&appid=${API_KEY}&units=metric`;
-    await axios
-      .all([axios.get(loc1), axios.get(loc2)])
-      .then(
-        axios.spread((res1, res2) => {
-          setDays(res1.data.daily);
-          setDate(res2.data.list);
-          load = true;
-        })
-      )
-      .catch((err) => {
-        console.log(err);
-      });
+    getWeather(citys, latitude, longitude);
   };
 
   // refresh
   const onRefresh = useCallback(() => {
-    setRefreshing(true);
-    setRefreshingCheck(refreshingCheck + 1);
-    setTimeout(() => {
-      setRefreshing(false);
-    }, 2000);
+    reset();
+    LocalLoad();
   }, []);
 
+  // first load
   useEffect(() => {
-    getWeather();
-  }, [refreshingCheck]);
+    LocalLoad();
+  }, []);
 
   return ok ? (
     <View style={styles.container}>
@@ -108,7 +113,7 @@ export default function App() {
         <Loadings styles={styles} />
       ) : (
         <View>
-          <Navs city={city} styles={styles} />
+          <Navs city={city} styles={styles} getWeather={getWeather} />
           <ScrollView
             showsVerticalScrollIndicator={false}
             contentContainerStyle={styles.weather}
