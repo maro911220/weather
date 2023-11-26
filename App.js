@@ -73,10 +73,9 @@ export default function App() {
     let timer = setTimeout(() => {
       Alert.alert("ERROR", "Failed to load data Please re-run the app", [
         { text: "Close", onPress: () => BackHandler.exitApp() },
-        { text: "Reload", onPress: () => onRefresh() },
       ]);
       return true;
-    }, 10000);
+    }, 6000);
     const { granted } = await Location.requestForegroundPermissionsAsync();
     !granted && setOk(false);
 

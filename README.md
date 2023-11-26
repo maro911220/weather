@@ -4,7 +4,7 @@
 
 ## Download Apk
 
-[https://maromovies.netlify.app/](https://maromovies.netlify.app/)
+[https://github.com/maro911220/weather/releases](https://github.com/maro911220/weather/releases)
 
 ## ScreenShoot
 
