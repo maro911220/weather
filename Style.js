@@ -172,6 +172,7 @@ export default styles2 = StyleSheet.create({
     position: "absolute",
     borderColor: mainCol,
     backgroundColor: black,
+    borderBottomWidth: 0,
     height: fullHeight - 30,
     borderBottomEndRadius: 0,
     borderBottomStartRadius: 0,
