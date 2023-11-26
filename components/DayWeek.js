@@ -3,33 +3,34 @@ import { Fontisto } from "@expo/vector-icons";
 
 export default DayWeek = ({ days, icons, styles }) => {
   return (
-    <View>
+    <View style={styles.dayWeek}>
       {days.map((day, index) => (
-        <View key={index}>
-          <View>
+        <View key={index} style={styles.dayWeekItem}>
+          <View style={styles.dayWeekSub}>
             <Fontisto
               name={icons[day.weather[0].main]}
-              size={16}
-              width={25}
-              color="white"
+              style={styles.dayWeekIcon}
             />
-            <Text>
+            <Text style={styles.dayWeekDate}>
               {new Date(new Date().setDate(new Date().getDate() + (index + 1)))
                 .toLocaleDateString()
-                .slice(-8)
-                .slice(0, 7)}
+                .slice(0, -1)}
             </Text>
-            <Text>
-              /&nbsp;
+            <Text style={styles.textPoint}>/</Text>
+            <Text style={styles.textBase}>
               {day.rain == null ? 0 : parseFloat(day.rain).toFixed(0)}
               mm
             </Text>
           </View>
 
-          <View>
-            <Text>{parseFloat(day.temp.min).toFixed(1)}°</Text>
-            <Text>/</Text>
-            <Text>{parseFloat(day.temp.max).toFixed(1)}°</Text>
+          <View style={styles.dayWeekSub}>
+            <Text style={styles.textBase}>
+              {parseFloat(day.temp.min).toFixed(1)}°
+            </Text>
+            <Text style={styles.textPoint}>/</Text>
+            <Text style={styles.textBase}>
+              {parseFloat(day.temp.max).toFixed(1)}°
+            </Text>
           </View>
         </View>
       ))}

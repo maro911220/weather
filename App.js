@@ -3,13 +3,15 @@ import styles from "./Style";
 import { API_KEY } from "@env";
 import * as Location from "expo-location";
 import { StatusBar } from "expo-status-bar";
+import { Fontisto } from "@expo/vector-icons";
 import React, { useEffect, useState, useCallback } from "react";
 import {
   View,
-  ScrollView,
-  Linking,
-  BackHandler,
+  Text,
   Alert,
+  Linking,
+  ScrollView,
+  BackHandler,
   RefreshControl,
 } from "react-native";
 // components
@@ -46,15 +48,7 @@ export default function App() {
 
   // getWeather
   const getWeather = async (citys, latitude, longitude) => {
-    // axios load check
     reset();
-    let timer = setTimeout(() => {
-      Alert.alert("ERROR", "Failed to load data Please re-run the app", [
-        { text: "Close", onPress: () => BackHandler.exitApp() },
-        { text: "Reload", onPress: () => onRefresh() },
-      ]);
-      return true;
-    }, 10000);
     // city
     setCity(citys);
     //get openweathermap data
@@ -66,7 +60,6 @@ export default function App() {
         axios.spread((res1, res2) => {
           setDays(res1.data.daily);
           setDate(res2.data.list);
-          clearTimeout(timer);
         })
       )
       .catch((err) => {
@@ -77,6 +70,13 @@ export default function App() {
   // LocalLoad
   const LocalLoad = async () => {
     // loaction request
+    let timer = setTimeout(() => {
+      Alert.alert("ERROR", "Failed to load data Please re-run the app", [
+        { text: "Close", onPress: () => BackHandler.exitApp() },
+        { text: "Reload", onPress: () => onRefresh() },
+      ]);
+      return true;
+    }, 10000);
     const { granted } = await Location.requestForegroundPermissionsAsync();
     !granted && setOk(false);
 
@@ -93,6 +93,7 @@ export default function App() {
       ? location[0].district
       : location[0].street;
 
+    clearTimeout(timer);
     getWeather(citys, latitude, longitude);
   };
 
@@ -112,7 +113,7 @@ export default function App() {
       {!days || !date ? (
         <Loadings styles={styles} />
       ) : (
-        <View>
+        <View style={styles.wrap}>
           <Navs city={city} styles={styles} getWeather={getWeather} />
           <ScrollView
             showsVerticalScrollIndicator={false}
@@ -124,6 +125,15 @@ export default function App() {
             {days && <Days days={days} icons={icons} styles={styles} />}
             {date && <DayTime date={date} icons={icons} styles={styles} />}
             {days && <DayWeek days={days} icons={icons} styles={styles} />}
+            <View style={styles.github}>
+              <Fontisto name="github" style={styles.githubIcon} />
+              <Text
+                style={styles.githubText}
+                onPress={() => Linking.openURL(`https://github.com/maro911220`)}
+              >
+                Maro911220 Github
+              </Text>
+            </View>
           </ScrollView>
         </View>
       )}

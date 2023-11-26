@@ -1,14 +1,20 @@
-import { StyleSheet } from "react-native";
+import { StyleSheet, Dimensions } from "react-native";
+
 const black = "#17181A";
-const mainCol = "#00D8B2";
+const darkGray = "#26282e";
+const mainCol = "#8894ff";
 const white = "#fff";
 const gray = "#d7e2ff";
+const fullWidth = Dimensions.get("window").width;
+const fullHeight = Dimensions.get("window").height;
 
 export default styles2 = StyleSheet.create({
   // default
   textBase: {
     color: gray,
-    fontWeight: "500",
+  },
+  textPoint: {
+    color: mainCol,
   },
   row: {
     flexDirection: "row",
@@ -19,6 +25,9 @@ export default styles2 = StyleSheet.create({
     padding: 20,
     paddingBottom: 0,
     backgroundColor: black,
+  },
+  wrap: {
+    flex: 1,
   },
   //nav
   nav: {
@@ -37,7 +46,7 @@ export default styles2 = StyleSheet.create({
   },
   // day
   day: {
-    marginVertical: 60,
+    marginTop: 60,
     alignItems: "center",
     justifyContent: "center",
   },
@@ -48,30 +57,153 @@ export default styles2 = StyleSheet.create({
     flexDirection: "row",
   },
   dayMainTitle: {
-    color: white,
     fontSize: 54,
+    color: mainCol,
     fontWeight: "bold",
+  },
+  dayMainIcon: {
+    color: gray,
+    fontSize: 54,
   },
   dayMainSub: {
     gap: 10,
     flexDirection: "row",
   },
+  // dayDetail
   dayDetail: {
-    padding: 12,
     width: "100%",
-    marginTop: 40,
-    borderWidth: 1,
-    borderRadius: 16,
-    borderColor: mainCol,
+    marginTop: 60,
+    borderRadius: 12,
+    paddingVertical: 16,
+    flexDirection: "row",
+    backgroundColor: darkGray,
+    justifyContent: "space-around",
+  },
+  dayDetailSub: {
+    gap: 8,
+    flexDirection: "row",
+  },
+  dayDetailIcon: {
+    color: gray,
+    fontSize: 20,
+  },
+  // dayTime
+  dayTime: {
+    marginTop: 30,
+    width: "100%",
+    borderRadius: 12,
+    paddingVertical: 16,
+    flexDirection: "row",
+    backgroundColor: darkGray,
+  },
+  dayTimeItem: {
+    gap: 4,
+    alignItems: "center",
+    justifyContent: "center",
+    width: (fullWidth - 40) / 5,
+  },
+  dayTimeTemp: {
+    fontSize: 16,
+    color: white,
+  },
+  dayTimeIcon: {
+    color: gray,
+    fontSize: 24,
+    paddingTop: 10,
+    borderTopWidth: 1,
+    borderTopColor: mainCol,
+  },
+  // dayWeek
+  dayWeek: {
+    marginTop: 30,
+    marginBottom: 20,
+    borderRadius: 12,
+    paddingVertical: 16,
+    paddingHorizontal: 12,
+    backgroundColor: darkGray,
+  },
+  dayWeekItem: {
+    paddingVertical: 10,
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+  dayWeekSub: {
+    gap: 4,
+    alignItems: "center",
+    flexDirection: "row",
+  },
+  dayWeekIcon: {
+    width: 24,
+    color: gray,
+    fontSize: 16,
+  },
+  dayWeekDate: {
+    width: 90,
+    color: gray,
+    fontSize: 14,
+  },
+  // github
+  github: {
+    gap: 10,
+    marginBottom: 20,
+    alignItems: "center",
+    flexDirection: "row",
+    justifyContent: "center",
+  },
+  githubText: {
+    color: white,
+    textAlign: "center",
+  },
+  githubIcon: {
+    fontSize: 16,
+    color: white,
   },
   // modal
+  modal: {
+    width: "100%",
+    height: "100%",
+  },
   centeredView: {
-    margin: "5%",
-    width: "90%",
-    height: "95%",
+    bottom: 0,
     padding: 20,
+    borderWidth: 1,
     borderRadius: 10,
-    backgroundColor: "#333",
+    width: fullWidth - 2,
+    position: "absolute",
+    borderColor: mainCol,
+    backgroundColor: black,
+    height: fullHeight - 30,
+    borderBottomEndRadius: 0,
+    borderBottomStartRadius: 0,
+  },
+  modalView: {
+    gap: 10,
+    marginTop: 40,
+    flexWrap: "wrap",
+  },
+  modalItem: {
+    gap: 4,
+    flex: 1,
+    padding: 12,
+    color: gray,
+    width: "100%",
+    borderRadius: 8,
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: darkGray,
+  },
+  modalClose: {
+    top: 12,
+    right: 12,
+    zIndex: 9,
+    position: "absolute",
+  },
+  modalItemIcon: {
+    color: gray,
+    fontSize: 20,
+  },
+  modalItemText: {
+    color: white,
   },
   // disagree
   disagree: {
