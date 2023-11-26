@@ -1,10 +1,13 @@
 # weather
 
-[openweathermap](https://openweathermap.org/api/)API를 활용하여 현재 지역의 날씨와 특정 지역의 날씨를 확인할 수 있는 안드로이드용 앱을 React-native를 사용하여 제작하였습니다.
+[openweathermap](https://openweathermap.org/api/)API를 활용하여 다음과 같은 기능을 구현한 날씨 앱을 개발하였습니다.
+
+1. 현재 위치의 날씨를 확인할 수 있습니다.
+2. 특정 지역의 날씨를 확인할 수 있습니다.
 
 ## Download Apk
 
-[https://github.com/maro911220/weather/releases](https://github.com/maro911220/weather/releases)
+[Download APK](https://github.com/maro911220/weather/releases)
 
 ## ScreenShoot
 
