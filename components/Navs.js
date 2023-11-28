@@ -2,24 +2,24 @@ import React, { useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { View, Text, Modal, Pressable, ScrollView } from "react-native";
 
-export default Navs = ({ city, styles, getWeather }) => {
+export default Navs = ({ city, styles, weather }) => {
   return (
     <View style={styles.nav}>
       <Text style={styles.cityName}>{city}</Text>
-      <Modals styles={styles} getWeather={getWeather} />
+      <Modals styles={styles} weather={weather} />
     </View>
   );
 };
 
 const localData = [
-  { name: "서울", latitude: 37.5683, longitude: 126.9778 },
-  { name: "대구", latitude: 35.8, longitude: 128.55 },
-  { name: "부산", latitude: 35.1028, longitude: 129.0403 },
-  { name: "Tokyo", latitude: 35.6895, longitude: 139.6917 },
-  { name: "Washington, D.C", latitude: 38.8951, longitude: -77.0364 },
+  { name: "seoul" },
+  { name: "daegu" },
+  { name: "busan" },
+  { name: "Tokyo" },
+  { name: "Washington" },
 ];
 
-const Modals = ({ styles, getWeather }) => {
+const Modals = ({ styles, weather }) => {
   const [modalVisible, setModalVisible] = useState(false);
   return (
     <>
@@ -46,7 +46,7 @@ const Modals = ({ styles, getWeather }) => {
                   key={index}
                   style={styles.modalItem}
                   onPress={() => {
-                    getWeather(loc.name, loc.latitude, loc.longitude);
+                    weather(loc.name);
                     setModalVisible(!modalVisible);
                   }}
                 >

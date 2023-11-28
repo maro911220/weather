@@ -5,6 +5,8 @@ import * as Location from "expo-location";
 import { StatusBar } from "expo-status-bar";
 import { Fontisto } from "@expo/vector-icons";
 import React, { useEffect, useState, useCallback } from "react";
+import * as SplashScreen from "expo-splash-screen";
+
 import {
   View,
   Text,
@@ -32,6 +34,35 @@ const icons = {
   Thunderstorm: "ligtning",
 };
 
+// cityData
+const cityData = {
+  seoul: {
+    citys: "서울",
+    latitudes: 37.5683,
+    longitudes: 126.9778,
+  },
+  daegu: {
+    citys: "대구",
+    latitudes: 35.8,
+    longitudes: 128.55,
+  },
+  busan: {
+    citys: "부산",
+    latitudes: 35.1028,
+    longitudes: 129.0403,
+  },
+  Tokyo: {
+    citys: "도쿄",
+    latitudes: 35.6895,
+    longitudes: 139.6917,
+  },
+  Washington: {
+    citys: "워싱턴 D.C",
+    latitudes: 38.8951,
+    longitudes: -77.0364,
+  },
+};
+
 // App
 export default function App() {
   const [city, setCity] = useState("Loading...");
@@ -39,27 +70,62 @@ export default function App() {
   const [date, setDate] = useState();
   const [ok, setOk] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-
-  // reset
-  const reset = () => {
+  // Get Weather
+  const weather = async (name) => {
     setDays();
     setDate();
-  };
+    let citys, latitudes, longitudes;
+    // error check
+    let timer = setTimeout(() => {
+      Alert.alert(
+        "오류가 발생했습니다.",
+        "앱을 완전히 종료한 뒤 재실행 바랍니다.",
+        [
+          {
+            text: "Close",
+            onPress: () => {
+              BackHandler.exitApp();
+              return true;
+            },
+          },
+        ]
+      );
+      return true;
+    }, 10000);
 
-  // getWeather
-  const getWeather = async (citys, latitude, longitude) => {
-    reset();
-    // city
-    setCity(citys);
+    // Local or City
+    if (name === "local") {
+      const { granted } = await Location.requestForegroundPermissionsAsync();
+      !granted && setOk(false);
+
+      const {
+        coords: { latitude, longitude },
+      } = await Location.getCurrentPositionAsync({ accuracy: 5 });
+
+      const location = await Location.reverseGeocodeAsync(
+        { latitude, longitude },
+        { useGoogleMaps: false }
+      );
+      latitudes = latitude;
+      longitudes = longitude;
+      citys = location[0].district ? location[0].district : location[0].street;
+    } else {
+      citys = cityData[name].citys;
+      latitudes = cityData[name].latitudes;
+      longitudes = cityData[name].longitudes;
+    }
+
     //get openweathermap data
-    const loc1 = `https://api.openweathermap.org/data/2.5/onecall?lat=${latitude}&lon=${longitude}&exclude=alerts&appid=${API_KEY}&units=metric`;
-    const loc2 = `https://api.openweathermap.org/data/2.5/forecast?lat=${latitude}&lon=${longitude}&appid=${API_KEY}&units=metric`;
+    setCity(citys);
+    const loc1 = `https://api.openweathermap.org/data/2.5/onecall?lat=${latitudes}&lon=${longitudes}&exclude=alerts&appid=${API_KEY}&units=metric`;
+    const loc2 = `https://api.openweathermap.org/data/2.5/forecast?lat=${latitudes}&lon=${longitudes}&appid=${API_KEY}&units=metric`;
     await axios
       .all([axios.get(loc1), axios.get(loc2)])
       .then(
         axios.spread((res1, res2) => {
           setDays(res1.data.daily);
           setDate(res2.data.list);
+          clearTimeout(timer);
         })
       )
       .catch((err) => {
@@ -67,44 +133,20 @@ export default function App() {
       });
   };
 
-  // LocalLoad
-  const LocalLoad = async () => {
-    // loaction request
-    let timer = setTimeout(() => {
-      Alert.alert("ERROR", "Failed to load data Please re-run the app", [
-        { text: "Close", onPress: () => BackHandler.exitApp() },
-      ]);
-      return true;
-    }, 6000);
-    const { granted } = await Location.requestForegroundPermissionsAsync();
-    !granted && setOk(false);
-
-    const {
-      coords: { latitude, longitude },
-    } = await Location.getCurrentPositionAsync({ accuracy: 5 });
-
-    const location = await Location.reverseGeocodeAsync(
-      { latitude, longitude },
-      { useGoogleMaps: false }
-    );
-
-    let citys = location[0].district
-      ? location[0].district
-      : location[0].street;
-
-    clearTimeout(timer);
-    getWeather(citys, latitude, longitude);
-  };
-
   // refresh
   const onRefresh = useCallback(() => {
-    reset();
-    LocalLoad();
+    weather("local");
   }, []);
+
+  const firstLoad = async () => {
+    await SplashScreen.preventAutoHideAsync();
+    await weather("local");
+    await SplashScreen.hideAsync();
+  };
 
   // first load
   useEffect(() => {
-    LocalLoad();
+    firstLoad();
   }, []);
 
   return ok ? (
@@ -113,7 +155,7 @@ export default function App() {
         <Loadings styles={styles} />
       ) : (
         <View style={styles.wrap}>
-          <Navs city={city} styles={styles} getWeather={getWeather} />
+          <Navs city={city} styles={styles} weather={weather} />
           <ScrollView
             showsVerticalScrollIndicator={false}
             contentContainerStyle={styles.weather}
